@@ -38,3 +38,8 @@ Output:
 Visualized:
 
 ![Input matrix SVG](docs/example.svg)
+
+### Optional arguments
+- `cell_size (int, optional)`: Size of each cell in the SVG. Defaults to 10.
+- `on_color (str, optional)`: Fill color for True cells. Defaults to "#000" (black).
+- `off_color (Optional[str], optional)`: Fill color for the background (False cells). If provided, a full-background rectangle is drawn. Defaults to None.
