@@ -37,10 +37,74 @@ def matrix_to_svg(
     # 1. Pad matrix with False cells around
     matrix_padded = np.pad(matrix, pad_width=1, mode="constant", constant_values=False)
 
-    return matrix_padded
+    # 2. Create secondary matrix of sub-matrices, each cell being a 2x2 matrix representing the quadrants (corners) of each cell
+    quadrants_matrix = np.zeros((height, width, 2, 2), dtype=bool)
+
+    # 3. For each cell of original matrix
+    for idx in np.ndindex(matrix.shape):
+        i, j = idx
+
+        # 3.1 If cell is True
+        if matrix[idx] == True:
+            # Set the cell's quadrants as True (default)
+            quadrants_matrix[idx] = True
+
+            # 3.1.1 Extract 3x3 neighborhood from matrix_padded
+            neighborhood = matrix_padded[i : i + 3, j : j + 3]
+
+            # 3.1.2 Set cell's quadrants based on neighborhood patterns
+            if neighborhood[0, 1] == False and neighborhood[1, 0] == False:
+                quadrants_matrix[idx][0, 0] = False
+
+            if neighborhood[0, 1] == False and neighborhood[1, 2] == False:
+                quadrants_matrix[idx][0, 1] = False
+
+            if neighborhood[1, 2] == False and neighborhood[2, 1] == False:
+                quadrants_matrix[idx][1, 1] = False
+
+            if neighborhood[1, 0] == False and neighborhood[2, 1] == False:
+                quadrants_matrix[idx][1, 0] = False
+
+        # 3.2 If cell is False
+        if matrix[idx] == False:
+            # 3.2.1 Extract 3x3 neighborhood from matrix_padded
+            neighborhood = matrix_padded[i : i + 3, j : j + 3]
+
+            # 3.2.2 Set cell's quadrants based on neighborhood patterns
+            if (
+                neighborhood[0, 0] == True
+                and neighborhood[0, 1] == True
+                and neighborhood[1, 0] == True
+            ):
+                quadrants_matrix[idx][0, 0] = True
+
+            if (
+                neighborhood[0, 1] == True
+                and neighborhood[0, 2] == True
+                and neighborhood[1, 2] == True
+            ):
+                quadrants_matrix[idx][0, 1] = True
+
+            if (
+                neighborhood[1, 2] == True
+                and neighborhood[2, 2] == True
+                and neighborhood[2, 1] == True
+            ):
+                quadrants_matrix[idx][1, 1] = True
+
+            if (
+                neighborhood[1, 0] == True
+                and neighborhood[2, 0] == True
+                and neighborhood[2, 1] == True
+            ):
+                quadrants_matrix[idx][1, 0] = True
+
+    # 4. For each cell, draw pre-made SVG patterns based on its quadrants matrix
+
+    return quadrants_matrix
 
 
 # For temporary testing purposes
 if __name__ == "__main__":
-    matrix = [[True, False], [False, True]]
+    matrix = [[True, False], [True, True]]
     print(matrix_to_svg(matrix))
