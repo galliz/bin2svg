@@ -99,12 +99,38 @@ def matrix_to_svg(
             ):
                 quadrants_matrix[idx][1, 0] = True
 
-    # 4. For each cell, draw pre-made SVG patterns based on its quadrants matrix
+    # 4. Add SVG boilerplate
+    svg_width = width * cell_size
+    svg_height = height * cell_size
+    svg_elements = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}" '
+        f'viewBox="0 0 {svg_width} {svg_height}">'
+    ]
 
-    return quadrants_matrix
+    if off_color is not None:
+        svg_elements.append(f'<rect width="100%" height="100%" fill="{off_color}" />')
+
+    # 5. For each cell, draw pre-made SVG patterns based on its quadrants matrix
+    for idx in np.ndindex(matrix.shape):
+        i, j = idx
+        x = j * cell_size
+        y = i * cell_size
+
+        if matrix[idx] == True:
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, True], [True, True]])
+            ):
+                print("ok")
+                svg_elements.append(
+                    f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{on_color}" />'
+                )
+
+    svg_elements.append("</svg>")
+
+    return "\n".join(svg_elements)
 
 
 # For temporary testing purposes
 if __name__ == "__main__":
-    matrix = [[True, False], [True, True]]
+    matrix = [[False, True, False], [True, True, True], [False, True, False]]
     print(matrix_to_svg(matrix))
