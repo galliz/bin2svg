@@ -117,12 +117,85 @@ def matrix_to_svg(
         y = i * cell_size
 
         if matrix[idx] == True:
+
+            # Full square
             if np.array_equal(
                 quadrants_matrix[idx], np.matrix([[True, True], [True, True]])
             ):
-                print("ok")
                 svg_elements.append(
                     f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{on_color}" />'
+                )
+
+            # All corners rounded (circle)
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, False], [False, False]])
+            ):
+                svg_elements.append(
+                    f'<circle cx="{x + cell_size / 2}" cy="{y + cell_size / 2}" r="{cell_size / 2}" fill="{on_color}" />'
+                )
+
+            # Top left corner rounding
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, True], [True, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y} H{x+cell_size} V{y+cell_size} H{x} Z" fill="{on_color}" />'
+                )
+
+            # Top right corner rounding
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, False], [True, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x+cell_size/2},{y} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} V{y+cell_size} H{x} V{y} Z" fill="{on_color}" />'
+                )
+
+            # Bottom right corner rounding
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, True], [True, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y} H{x+cell_size} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y+cell_size} H{x} Z" fill="{on_color}" />'
+                )
+
+            # Bottom left corner rounding
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, True], [False, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 0 {x+cell_size/2},{y+cell_size} H{x+cell_size} V{y} Z" fill="{on_color}" />'
+                )
+
+            # Left side rounding (both left corners)
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, True], [False, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x+cell_size/2},{y} H{x+cell_size} V{y+cell_size} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y} Z" fill="{on_color}" />'
+                )
+
+            # Right side rounding (both right corners)
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, False], [True, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y+cell_size} H{x} V{y} Z" fill="{on_color}" />'
+                )
+
+            # Top side rounding (both top corners)
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, False], [True, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} V{y+cell_size} H{x} Z" fill="{on_color}" />'
+                )
+
+            # Bottom side rounding (both bottom corners)
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, True], [False, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y} H{x+cell_size} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x},{y+cell_size/2} Z" fill="{on_color}" />'
                 )
 
     svg_elements.append("</svg>")
@@ -132,5 +205,5 @@ def matrix_to_svg(
 
 # For temporary testing purposes
 if __name__ == "__main__":
-    matrix = [[False, True, False], [True, True, True], [False, True, False]]
+    matrix = [[False, False, True], [True, True, False], [True, True, False]]
     print(matrix_to_svg(matrix))
