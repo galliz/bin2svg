@@ -3,59 +3,44 @@ Module for converting binary (boolean) matrices to SVG format.
 """
 
 from typing import List, Optional
+import numpy as np
 
 __all__ = ["matrix_to_svg"]
 
 
 def matrix_to_svg(
-    matrix: List[List[bool]],
+    matrix,
     cell_size: int = 10,
     on_color: str = "#000",
     off_color: Optional[str] = None,
+    round: bool = False,
 ) -> str:
     """
     Convert a binary (boolean) matrix to an SVG string representation.
 
     Args:
         matrix (List[List[bool]]): 2D boolean matrix.
-        cell_size (int, optional): Size of each cell in the SVG. Defaults to 10.
-        on_color (str, optional): Fill color for True cells. Defaults to "#000" (black).
-        off_color (Optional[str], optional): Fill color for the background (False cells).
-                                             If provided, a full-background rectangle is drawn.
-                                             Defaults to None.
+        cell_size (int, optional): Size of each cell. Defaults to 10.
+        on_color (str, optional): Fill color for True cells. Defaults to "#000".
+        off_color (Optional[str], optional): Background color if provided.
+        round (bool, optional): Enables corner rounding. Defaults to False.
 
     Returns:
         str: SVG formatted string.
-
-    Raises:
-        ValueError: If the matrix is empty or rows have inconsistent lengths.
     """
-    if not matrix or not matrix[0]:
+    matrix = np.asarray(matrix)
+
+    if matrix.size == 0 or matrix.shape[0] == 0 or matrix.shape[1] == 0:
         raise ValueError("Matrix must be non-empty and contain at least one cell.")
+    height, width = matrix.shape
 
-    height = len(matrix)
-    width = len(matrix[0])
-    if any(len(row) != width for row in matrix):
-        raise ValueError("All rows in the matrix must have the same length.")
+    # 1. Pad matrix with False cells around
+    matrix_padded = np.pad(matrix, pad_width=1, mode="constant", constant_values=False)
 
-    svg_width = width * cell_size
-    svg_height = height * cell_size
-    svg_elements = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}" '
-        f'viewBox="0 0 {svg_width} {svg_height}">'
-    ]
+    return matrix_padded
 
-    if off_color is not None:
-        svg_elements.append(f'<rect width="100%" height="100%" fill="{off_color}" />')
 
-    for i, row in enumerate(matrix):
-        for j, cell in enumerate(row):
-            if cell:
-                x = j * cell_size
-                y = i * cell_size
-                svg_elements.append(
-                    f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{on_color}" />'
-                )
-
-    svg_elements.append("</svg>")
-    return "\n".join(svg_elements)
+# For temporary testing purposes
+if __name__ == "__main__":
+    matrix = [[True, False], [False, True]]
+    print(matrix_to_svg(matrix))
