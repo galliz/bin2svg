@@ -198,6 +198,39 @@ def matrix_to_svg(
                     f'<path d="M{x},{y} H{x+cell_size} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x},{y+cell_size/2} Z" fill="{on_color}" />'
                 )
 
+        if matrix[idx] == False:
+            # Inverted corner - Bottom right filled
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, False], [False, True]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x+cell_size},{y+cell_size/2} V{y+cell_size} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 0 {x+cell_size},{y+cell_size/2} Z" fill="{on_color}" />'
+                )
+
+            # Inverted corner - Bottom left filled
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, False], [True, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y+cell_size/2} V{y+cell_size} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x},{y+cell_size/2} Z" fill="{on_color}" />'
+                )
+
+            # Inverted corner - Top right filled
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[False, True], [False, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x+cell_size},{y+cell_size/2} V{y} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} Z" fill="{on_color}" />'
+                )
+
+            # Inverted corner - Top left filled
+            if np.array_equal(
+                quadrants_matrix[idx], np.matrix([[True, False], [False, False]])
+            ):
+                svg_elements.append(
+                    f'<path d="M{x},{y+cell_size/2} V{y} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 0 {x},{y+cell_size/2} Z" fill="{on_color}" />'
+                )
+
     svg_elements.append("</svg>")
 
     return "\n".join(svg_elements)
@@ -205,5 +238,5 @@ def matrix_to_svg(
 
 # For temporary testing purposes
 if __name__ == "__main__":
-    matrix = [[False, False, True], [True, True, False], [True, True, False]]
+    matrix = [[False, True, False], [True, True, True], [False, True, False]]
     print(matrix_to_svg(matrix))
