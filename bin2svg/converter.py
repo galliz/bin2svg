@@ -2,7 +2,7 @@
 Module for converting binary (boolean) matrices to SVG format.
 """
 
-from typing import List, Optional
+from typing import Optional
 import numpy as np
 
 __all__ = ["matrix_to_svg"]
@@ -118,84 +118,37 @@ def matrix_to_svg(
 
         if matrix[idx] == True:
 
-            # Full square
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, True], [True, True]])
-            ):
-                svg_elements.append(
-                    f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{on_color}" />'
-                )
-
-            # All corners rounded (circle)
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[False, False], [False, False]])
-            ):
-                svg_elements.append(
-                    f'<circle cx="{x + cell_size / 2}" cy="{y + cell_size / 2}" r="{cell_size / 2}" fill="{on_color}" />'
-                )
+            # Draw squares for all True quadrants
+            for qi, qj in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+                if quadrants_matrix[idx][qi, qj] == True:
+                    qx = x + (qj * cell_size / 2)
+                    qy = y + (qi * cell_size / 2)
+                    svg_elements.append(
+                        f'<rect x="{qx}" y="{qy}" width="{cell_size/2}" height="{cell_size/2}" fill="{on_color}" />'
+                    )
 
             # Top left corner rounding
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[False, True], [True, True]])
-            ):
+            if quadrants_matrix[idx][0, 0] == False:
                 svg_elements.append(
-                    f'<path d="M{x},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y} H{x+cell_size} V{y+cell_size} H{x} Z" fill="{on_color}" />'
+                    f'<path d="M{x+cell_size/2},{y+cell_size/2} L{x},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y} Z" fill="{on_color}" />'
                 )
 
             # Top right corner rounding
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, False], [True, True]])
-            ):
+            if quadrants_matrix[idx][0, 1] == False:
                 svg_elements.append(
-                    f'<path d="M{x+cell_size/2},{y} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} V{y+cell_size} H{x} V{y} Z" fill="{on_color}" />'
+                    f'<path d="M{x+cell_size/2},{y+cell_size/2} L{x+cell_size/2},{y} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} Z" fill="{on_color}" />'
                 )
 
             # Bottom right corner rounding
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, True], [True, False]])
-            ):
+            if quadrants_matrix[idx][1, 1] == False:
                 svg_elements.append(
-                    f'<path d="M{x},{y} H{x+cell_size} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y+cell_size} H{x} Z" fill="{on_color}" />'
+                    f'<path d="M{x+cell_size/2},{y+cell_size/2} L{x+cell_size},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y+cell_size} Z" fill="{on_color}" />'
                 )
 
             # Bottom left corner rounding
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, True], [False, True]])
-            ):
+            if quadrants_matrix[idx][1, 0] == False:
                 svg_elements.append(
-                    f'<path d="M{x},{y} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 0 {x+cell_size/2},{y+cell_size} H{x+cell_size} V{y} Z" fill="{on_color}" />'
-                )
-
-            # Left side rounding (both left corners)
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[False, True], [False, True]])
-            ):
-                svg_elements.append(
-                    f'<path d="M{x+cell_size/2},{y} H{x+cell_size} V{y+cell_size} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y} Z" fill="{on_color}" />'
-                )
-
-            # Right side rounding (both right corners)
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, False], [True, False]])
-            ):
-                svg_elements.append(
-                    f'<path d="M{x},{y} H{x+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size/2},{y+cell_size} H{x} V{y} Z" fill="{on_color}" />'
-                )
-
-            # Top side rounding (both top corners)
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[False, False], [True, True]])
-            ):
-                svg_elements.append(
-                    f'<path d="M{x},{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x+cell_size},{y+cell_size/2} V{y+cell_size} H{x} Z" fill="{on_color}" />'
-                )
-
-            # Bottom side rounding (both bottom corners)
-            if np.array_equal(
-                quadrants_matrix[idx], np.matrix([[True, True], [False, False]])
-            ):
-                svg_elements.append(
-                    f'<path d="M{x},{y} H{x+cell_size} V{y+cell_size/2} A{cell_size/2},{cell_size/2} 0 0 1 {x},{y+cell_size/2} Z" fill="{on_color}" />'
+                    f'<path d="M{x+cell_size/2},{y+cell_size/2} L{x+cell_size/2},{y+cell_size} A{cell_size/2},{cell_size/2} 0 0 1 {x},{y+cell_size/2} Z" fill="{on_color}" />'
                 )
 
         if matrix[idx] == False:
